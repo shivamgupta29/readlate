@@ -36,4 +36,21 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+// @route GET /api/articles
+// @desc  Get all articles for the authenticated user
+// @access Private
+router.get("/", auth, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const articles = await db.query(
+      "SELECT * FROM articles WHERE user_id = $1 ORDER BY created_at DESC",
+      [userId]
+    );
+    res.json(articles.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 module.exports = router;
