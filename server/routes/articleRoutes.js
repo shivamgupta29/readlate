@@ -53,4 +53,51 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// @route GET /api/articles/:id
+// @desc  Get a specific article by ID
+// @access Private
+router.get("/:id", auth, async (req, res) => {
+  const userId = req.user.id;
+  const articleId = req.params.id;
+  try {
+    const article = await db.query(
+      "SELECT * FROM articles WHERE id = $1 AND user_id = $2",
+      [articleId, userId]
+    );
+    if (article.rows.length === 0) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+    res.json(article.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+// @route DELETE /api/articles/:id
+// @desc  Delete a specific article by ID
+// @access Private
+router.delete("/:id", auth, async (req, res) => {
+  const userId = req.user.id;
+  const articleId = req.params.id;
+  try {
+    const article = await db.query(
+      "SELECT * FROM articles WHERE id = $1 AND user_id = $2",
+      [articleId, userId]
+    );
+    if (article.rows.length === 0) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    await db.query("DELETE FROM articles WHERE id = $1 AND user_id = $2", [
+      articleId,
+      userId,
+    ]);
+
+    res.json({ message: "Article deleted" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
 module.exports = router;
