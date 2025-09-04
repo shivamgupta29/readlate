@@ -7,6 +7,7 @@ import App from "./App";
 import LoginPage from "./pages/login";
 import RegisterPage from "./pages/signup";
 import DashboardPage from "./pages/dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 import "./index.css";
 
 // Define the routes for the application
@@ -15,9 +16,14 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      // Public routes
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
-      { path: "/dashboard", element: <DashboardPage /> },
+      // Protected routes
+      {
+        element: <ProtectedRoute />,
+        children: [{ path: "/dashboard", element: <DashboardPage /> }],
+      },
     ],
   },
 ]);
